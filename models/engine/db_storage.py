@@ -79,7 +79,6 @@ class DBStorage:
         """Returns object based on the class and its ID"""
         clases = []
         for clas in classes.values():
-            #clases.append(clas)
             if clas == cls:
                 objects = self.__session.query(clas).all()
                 for obj in objects:
