@@ -5,13 +5,13 @@ from flask import jsonify
 from models import storage
 from models.state import State
 
-@app.route("/state", method=['GET'])
+@app_views.route("/state", methods=['GET'])
 def get_states():
     states = storage.all(State).values()
     return jsonify([state.to_dict() for state in states])
 
 
-@app.route("/states/<state_id>",  methods=["GET"])
+@app_views.route("/states/<state_id>",  methods=["GET"])
 def get_state_by_id(state_id):
     state = storage.get(State, state_id)
     if state is None:
@@ -19,7 +19,7 @@ def get_state_by_id(state_id):
     return jsonify(state.to_dict())
 
 
-@app.route("/states/<state_id>", methods=["DELETE"])
+@app_views.route("/states/<state_id>", methods=["DELETE"])
 def delete_state_by_id(state_id):
     state = storage.get(State, state_id)
     if state is None:
@@ -29,7 +29,7 @@ def delete_state_by_id(state_id):
     return jsonify({})
 
 
-@app.route("/states", methods=["POST"])
+@app_views.route("/states", methods=["POST"])
 def create_state():
     if not request.json:
         abort(400, 'Not a JSON')
