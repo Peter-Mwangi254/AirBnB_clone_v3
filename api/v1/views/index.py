@@ -12,6 +12,7 @@ from models.engine.file_storage import classes
 def status():
     return jsonify({"status": "OK"})
 
+
 @app_views.route("/stats")
 def get_total():
     tot_insts = {
@@ -22,5 +23,5 @@ def get_total():
         "states": storage.count("State"),
         "users": storage.count("User")
     }
-        
+
     return jsonify(tot_insts)
