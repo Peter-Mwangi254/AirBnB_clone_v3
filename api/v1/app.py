@@ -18,12 +18,13 @@ def teardown(exception):
     """ tear down function"""
     storage.close()
 
+
 @app.errorhandler(NotFound)
 def not_found(error):
     """Create JSON response with apporopriate error message"""
     response = jsonify({"error": "Not found"})
     response.status_code = 404
-    return response 
+    return response
 
 
 if __name__ == "__main__":
