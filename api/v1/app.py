@@ -4,7 +4,8 @@ simple application
 """
 from models import storage
 from api.v1.views import app_views
-from flask import Flask
+from flask import Flask, jsonify
+from werkzeug.exceptions import NotFound
 from os import getenv
 
 
@@ -16,6 +17,13 @@ app.register_blueprint(app_views)
 def teardown(exception):
     """ tear down function"""
     storage.close()
+
+@app.errorhandler(NotFound)
+def not_found(error):
+    """Create JSON response with apporopriate error message"""
+    response = jsonify({"error": "Not found"})
+    response.status_code = 404
+    return response 
 
 
 if __name__ == "__main__":
