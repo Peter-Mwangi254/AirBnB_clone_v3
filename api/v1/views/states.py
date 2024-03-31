@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 from api.v1.views import app_views
-from flask import jsonify
+from flask import jsonify, abort, request
 from models import storage
 from models.state import State
 
-@app_views.route("/state", methods=['GET'])
+@app_views.route("/states", methods=['GET'])
 def get_states():
     states = storage.all(State).values()
     return jsonify([state.to_dict() for state in states])
@@ -40,3 +40,18 @@ def create_state():
     storage.new(new_state)
     storage.save()
     return jsonify(new_state.to_dict()), 201
+
+
+@app_views.route("/states/<state_id>",  methods=["PUT"])
+def update_state(state_id):
+    state_json = request.get_json(silent=True)
+    if state_json is None:
+        abort(400, 'Not a JSON')
+    fetched_obj = storage.get("State", str(state_id))
+    if fetched_obj is None:
+        abort(404)
+    for key, val in state_json.items():
+        if key not in ["id", "created_at", "updated_at"]:
+            setattr(fetched_obj, key, val)
+    fetched_obj.save()
+    return jsonify(fetched_obj.to_json())
