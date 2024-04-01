@@ -4,7 +4,6 @@ view for Review object that handles all default RESTFul API actions
 '''
 from api.v1.views import app_views
 from flask import jsonify, abort, request
-from models.review import Review
 from models.place import Place
 from models.review import Review
 from models import storage
@@ -36,7 +35,7 @@ def delete_review(review_id):
     review = storage.get(Review, review_id)
     if not review:
         abort(404)
-    storage.delete(review)
+    review.delete()
     storage.save()
     return jsonify({}), 200
 
@@ -53,7 +52,8 @@ def create_review(place_id):
         abort(400, 'Not a JSON')
     review_info = request.get_json()
 
-    #
+    if 'user_id' not in review_info:
+        abort(400, "Missing user_id")
     user_id = review_info['user_id']
     user = storage.get(User, user_id)
     if not user:
@@ -62,16 +62,16 @@ def create_review(place_id):
     if 'text' not in review_info.keys():
         abort(400, 'Missing text')
 
+    review_info['place_id'] = place_id
     new_revw = Review(**review_info)
-    new_revw.place_id = place_id
-    new_revw.user_id = user_id
+    #new_revw.user_id = user_id
     storage.new(new_revw)
     storage.save()
 
-    return jsonify(review.to_dict()), 201
+    return jsonify(new_revw.to_dict()), 201
 
 
-@app_route("/reviews/<review_id>" methods=['PUT'], strict_slashes=False)
+@app_views.route("/reviews/<review_id>", methods=['PUT'], strict_slashes=False)
 def update_review(review_id):
     '''Updates a review specified by id'''
     review = storage.get(Review, review_id)
@@ -80,8 +80,8 @@ def update_review(review_id):
     if not request.is_json:
         abort(400, 'Not a JSON')
     update_data = request.get_json()
-    for k, v in update_data.items()
-        if k not in ['id','user_id', 'place_id', 'created_at', 'updated_at']
+    for k, v in update_data.items():
+        if k not in ['id','user_id', 'place_id', 'created_at', 'updated_at']:
             setattr(review, k, v)
     storage.save()
 
