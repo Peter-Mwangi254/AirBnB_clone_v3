@@ -16,7 +16,7 @@ def get_amenities():
 
 
 @app_views.route("/amenities/<amenity_id>", methods=['GET'], strict_slashes=False)
-def get_amenities_id(amenity_id):
+def get_amenity(amenity_id):
     '''Retrieves an amenity object by id'''
     amenity = storage.get(Amenity, amenity_id)
     if not amenity:
@@ -41,7 +41,7 @@ def create_amenity():
     '''Creates new amenity object'''
     if not request.is_json:
         abort (400, 'Not a JSON')
-    amenity_data = response.get_json()
+    amenity_data = request.get_json()
     if 'name' not in amenity_data:
         abort(400, 'Missing name')
     new_amen = Amenity(**amenity_data)
@@ -58,7 +58,7 @@ def update_amenity(amenity_id):
         abort (404, 'Invalid amenity')
     if not response.is_json:
         abort(400, 'Not a JSON')
-    amenity_attrs = response.get_json()
+    amenity_attrs = request.get_json()
     for k, v in amenity_attrs.items():
         if k not in ['id', 'created_at', 'updated_at']:
             setattr(amenity, k, v)
