@@ -53,7 +53,7 @@ def create_state():
 
 @app_views.route("/states/<state_id>", methods=["PUT"], strict_slashes=False)
 def update_state(state_id):
-    """ update"""
+    """ update states objs"""
     state_json = request.get_json(silent=True)
     if state_json is None:
         abort(400, 'Not a JSON')
