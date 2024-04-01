@@ -10,7 +10,7 @@ from models.user import User
 
 @app_views.route("/users", methods=["GET"], strict_slashes=False)
 def get_users():
-    """ gets all states """
+    """ gets all users """
     users = storage.all(User).values()
     dict_users = [user.to_dict() for user in users]
     return jsonify(dict_users)
@@ -59,9 +59,9 @@ def update_user(user_id):
     user = storage.get(User, user_id)
     if not user:
         abort (404, 'Invalid user')
-    if not response.is_json:
-        abort(400, 'Not a JSON')
     user_attrs = request.get_json()
+    if not user_attrs:
+        abort(400, 'Not a JSON')
     for k, v in user_attrs.items():
         if k not in ['id', 'created_at', 'updated_at']:
             setattr(user, k, v)
