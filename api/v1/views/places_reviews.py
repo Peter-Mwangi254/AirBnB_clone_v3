@@ -61,6 +61,7 @@ def create_review(place_id):
 
     new_revw = Review(**review_info)
     new_revw.place_id = place_id
+    new_revw.user_id = user_id
     storage.new(new_revw)
     storage.save()
 
