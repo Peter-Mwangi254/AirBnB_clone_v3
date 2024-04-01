@@ -25,7 +25,7 @@ def get_city_by_id(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort (404)
-    return jsonify(state.to_dict())
+    return jsonify(city.to_dict())
 
 
 @app_views.route("/cities/<city_id>", methods=["DELETE"],
@@ -47,12 +47,13 @@ def create_a_city(state_id):
     state = storage.get(State, state_id)
     if not state:
         abort (404)
+    if not request.is_json:
+        abort (400, 'Not a JSON')
     city_attrs = request.get_json()
-    if not city_attrs:
-        abort (404)
     if 'name' not in city_attrs:
         abort (404, 'Missing name')
     new_city = City(**city_attrs)
+    new_city.state_id = state_id # To set state_id attribute & column for city
     storage.new(new_city)
     storage.save()
     return jsonify(new_city.to_dict()), 201
