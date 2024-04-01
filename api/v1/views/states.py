@@ -13,15 +13,6 @@ def get_states():
     """ gets all states by id"""
     states = storage.all(State).values()
     formatted_states = [state.to_dict() for state in states]
-    # for state in states:
-        # state_dict = {
-         #   "__class__": "State",
-          #  "created_at": state.created_at.isoformat(),
-          #  "id": state.id,
-          #  "name": state.name,
-          #  "updated_at": state.updated_at.isoformat()
-        # }
-        # formatted_states.append(state_dict)
     return jsonify(formatted_states)
 
 
