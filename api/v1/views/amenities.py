@@ -56,7 +56,7 @@ def update_amenity(amenity_id):
     amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort (404)
-    if not response.is_json:
+    if not request.is_json:
         abort(400, 'Not a JSON')
     amenity_attrs = request.get_json()
     for k, v in amenity_attrs.items():
