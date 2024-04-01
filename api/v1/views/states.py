@@ -12,16 +12,16 @@ from models.state import State
 def get_states():
     """ gets all states by id"""
     states = storage.all(State).values()
-    formatted_states = []
-    for state in states:
-        state_dict = {
-            "__class__": "State",
-            "created_at": state.created_at.isoformat(),
-            "id": state.id,
-            "name": state.name,
-            "updated_at": state.updated_at.isoformat()
-        }
-        formatted_states.append(state_dict)
+    formatted_states = [state.to_dict() for state in states]
+    # for state in states:
+        # state_dict = {
+         #   "__class__": "State",
+          #  "created_at": state.created_at.isoformat(),
+          #  "id": state.id,
+          #  "name": state.name,
+          #  "updated_at": state.updated_at.isoformat()
+        # }
+        # formatted_states.append(state_dict)
     return jsonify(formatted_states)
 
 
@@ -43,17 +43,17 @@ def delete_state_by_id(state_id):
         abort(404)
     state.delete()
     storage.save()
-    return jsonify({})
+    return jsonify({}), 200
 
 
 @app_views.route("/states", methods=["POST"], strict_slashes=False)
 def create_state():
     """ creates a new instance"""
-    if not request.json:
+    if not request.is_json:  #
         abort(400, 'Not a JSON')
-    if 'name' not in request.json:
+    data = request.get_json()  #
+    if 'name' not in data:
         abort(400, 'Missing name')
-    data = request.json
     new_state = State(**data)
     storage.new(new_state)
     storage.save()
@@ -66,11 +66,11 @@ def update_state(state_id):
     state_json = request.get_json(silent=True)
     if state_json is None:
         abort(400, 'Not a JSON')
-    fetched_obj = storage.get("State", str(state_id))
+    fetched_obj = storage.get(State, str(state_id))
     if fetched_obj is None:
         abort(404)
     for key, val in state_json.items():
         if key not in ["id", "created_at", "updated_at"]:
             setattr(fetched_obj, key, val)
     fetched_obj.save()
-    return jsonify(fetched_obj.to_dict())
+    return jsonify(fetched_obj.to_dict()), 200

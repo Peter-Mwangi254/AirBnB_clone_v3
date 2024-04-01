@@ -3,7 +3,7 @@
 views module
 """
 from flask import Blueprint
-import states.py
+# from ....models.states import *
 
 
 app_views = Blueprint('app_views', __name__, url_prefix='/api/v1')
